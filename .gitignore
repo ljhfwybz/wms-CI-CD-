@@ -1,0 +1,35 @@
+# 后端
+backend/warehouse_manager/target/
+backend/warehouse_manager/.idea/
+backend/warehouse_manager/*.iml
+backend/warehouse_manager/.vscode/
+
+# 前端
+frontend/warehouse_boot_pc/node_modules/
+frontend/warehouse_boot_pc/dist/
+frontend/warehouse_boot_pc/dist-ssr/
+frontend/warehouse_boot_pc/.DS_Store
+frontend/warehouse_boot_pc/*.local
+frontend/warehouse_boot_pc/.vscode/
+frontend/warehouse_boot_pc/yarn-error.log
+
+# 截图（不需要上传）
+screenshots/
+
+# 日志文件
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*~

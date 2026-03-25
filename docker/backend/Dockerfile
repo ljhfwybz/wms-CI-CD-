@@ -17,7 +17,7 @@ RUN mvn clean package -DskipTests -B
 
 
 # 第二阶段：运行
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:11-jre
 
 WORKDIR /app
 

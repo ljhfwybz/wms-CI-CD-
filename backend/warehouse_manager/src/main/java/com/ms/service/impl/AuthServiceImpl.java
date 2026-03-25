@@ -21,26 +21,18 @@ public class AuthServiceImpl implements AuthService{
     private AuthMapper authMapper;
 
     @Autowired
-    private StringRedisTemplate  redisTemplate;
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public List<Auth> authTreeByUid(Integer userId) {
-        //先从redis中查询缓存的用户菜单树
         String authTreeJson = redisTemplate.opsForValue().get("authTree" + userId);
-        if (StringUtils.hasText(authTreeJson)) { //说明redis中有用户菜单树的缓存
-			//将菜单树List<Auth>转的json串转回菜单树List<Auth>并返回
+        if (StringUtils.hasText(authTreeJson)) {
             List<Auth> authTreeList = JSON.parseArray(authTreeJson, Auth.class);
             return authTreeList;
         }
 
-        /*
-        * 说明redis中没有用户菜单树的缓存
-        * */
-        //查询用户权限下的所有菜单
         List<Auth> allAuthList = authMapper.findAuthByUid(userId);
-        //将所有List<Auth>转换成菜单树List<Auth>
         List<Auth> authTreeList = allAuthToAuthTree(allAuthList, 0);
-        //向redis中缓存菜单树List<Auth>
         redisTemplate.opsForValue().set("authTree" + userId, JSON.toJSONString(authTreeList));
         return authTreeList;
     }

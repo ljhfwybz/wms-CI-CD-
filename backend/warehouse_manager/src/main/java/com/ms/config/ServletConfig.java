@@ -17,21 +17,12 @@ public class ServletConfig {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    /*
-    * 配置FilterRegistrationBean的bean对象 -- 注册原生Servlet中的过滤器
-    * */
-
     @Bean
     public FilterRegistrationBean filterRegistrationBean() {
-        //创建FilterRegistrationBean的bean对象
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-        //创建自定义的过滤器
         LoginCheckFilter loginCheckFilter = new LoginCheckFilter();
-        //将自定义的过滤器注册到FilterRegistrationBean
         filterRegistrationBean.setFilter(loginCheckFilter);
-        //手动注入redis模板
         loginCheckFilter.setRedisTemplate(redisTemplate);
-        //给过滤器指定拦截的请求
         filterRegistrationBean.addUrlPatterns("/*");
         return filterRegistrationBean;
     }

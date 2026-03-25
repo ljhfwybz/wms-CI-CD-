@@ -229,9 +229,9 @@ CREATE TABLE `out_store_info` (
 
 -- 插入初始数据
 
--- 插入管理员用户 (密码为123456的MD5加密)
+-- 插入管理员用户 (密码为123456的HMAC-MD5加密，密钥为warehouse)
 INSERT INTO `user_info` (`user_code`, `user_name`, `user_pwd`, `user_type`, `user_state`, `is_delete`, `create_by`) VALUES
-('admin', '系统管理员', 'e10adc3949ba59abbe56e057f20f883e', '1', '1', '0', 1);
+('admin', '系统管理员', 'c431d451c81e75ffac75a640590ed0a1', '1', '1', '0', 1);
 
 -- 插入角色
 INSERT INTO `role_info` (`role_name`, `role_desc`, `role_code`, `role_state`, `create_by`) VALUES

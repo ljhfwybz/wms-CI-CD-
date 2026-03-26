@@ -103,12 +103,11 @@ services:
         VITE_WAREHOUSE_CONTEXT_PATH: /warehouse
     volumes:
       - frontend_html:/assets
-    command: sh -c "cp -r /usr/share/nginx/html/* /assets/"
     depends_on:
       - backend-blue
     networks:
       - wms_network
-    restart: "no"
+    restart: unless-stopped
 
 volumes:
   mysql_data:

@@ -3,6 +3,10 @@ FROM node:16-alpine AS builder
 
 WORKDIR /app
 
+# 覆盖前端构建期环境：确保资源请求走 Nginx（/warehouse 前缀），避免依赖宿主的 9999 端口
+ARG VITE_WAREHOUSE_CONTEXT_PATH=/warehouse
+ENV VITE_WAREHOUSE_CONTEXT_PATH=$VITE_WAREHOUSE_CONTEXT_PATH
+
 # 复制依赖文件
 COPY package*.json ./
 

@@ -29,13 +29,13 @@ echo "[$(date)] Waiting for $NEW_ENV to be ready..."
 sleep 30
 
 echo "[$(date)] Checking $NEW_ENV health..."
-if ! docker-compose ps | grep "backend-$NEW_ENV" | grep "Up"; then
-    echo "[$(date)] $NEW_ENV is healthy, switching traffic..."
+if docker-compose ps | grep "backend-$NEW_ENV" | grep -q "Up"; then
+    echo "[$(date)] $NEW_ENV is healthy, reloading nginx..."
 
-    echo "[$(date)] Updating Nginx to route to $NEW_ENV..."
+    echo "[$(date)] Reloading Nginx configuration..."
     docker exec wms_nginx nginx -s reload
 
-    echo "[$(date)] Traffic switched to $NEW_ENV"
+    echo "[$(date)] Traffic switch step completed (nginx reload issued)"
 
     echo "[$(date)] Stopping $CURRENT_ENV environment..."
     docker-compose stop backend-$CURRENT_ENV

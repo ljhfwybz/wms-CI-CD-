@@ -7,9 +7,12 @@ import com.ms.utils.TokenUtils;
 import com.ms.utils.WarehouseConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -118,11 +121,23 @@ public class ProductController {
     public Result uploadImage(MultipartFile file) {
 
         try {
-            File uploadDirFile = ResourceUtils.getFile(uploadPath);
-            String uploadDirPath = uploadDirFile.getAbsolutePath();
+            if (file == null || file.isEmpty()) {
+                return Result.err(Result.CODE_ERR_BUSINESS, "图片不能为空！");
+            }
+
             String filename = file.getOriginalFilename();
-            String uploadFilePath = uploadDirPath + "\\" + filename;
-            file.transferTo(new File(uploadFilePath));
+            if (filename == null || filename.trim().isEmpty()) {
+                return Result.err(Result.CODE_ERR_BUSINESS, "图片文件名无效！");
+            }
+
+            // 防止路径穿越：只取文件名部分
+            filename = Paths.get(filename).getFileName().toString();
+
+            Path uploadDir = Paths.get(uploadPath);
+            Files.createDirectories(uploadDir);
+
+            Path uploadFile = uploadDir.resolve(filename);
+            file.transferTo(uploadFile.toFile());
 
             //成功响应
             return Result.ok("图片上传成功！");

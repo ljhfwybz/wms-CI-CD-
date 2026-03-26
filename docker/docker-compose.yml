@@ -35,13 +35,13 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  backend-blue:
     build:
       context: ../backend/warehouse_manager
       dockerfile: ../../docker/backend/Dockerfile
-    container_name: wms_backend
-    ports:
-      - "9999:9999"
+    volumes:
+      # 后端图片上传目录：两套蓝绿共享同一份上传数据
+      - wms_upload:/app/static/img/upload
     depends_on:
       mysql:
         condition: service_healthy
@@ -57,22 +57,64 @@ services:
       - wms_network
     restart: unless-stopped
 
-  frontend:
+  backend-green:
     build:
-      context: ../frontend/warehouse_boot_pc
-      dockerfile: ../../docker/frontend/Dockerfile
-    container_name: wms_frontend
-    ports:
-      - "80:80"
+      context: ../backend/warehouse_manager
+      dockerfile: ../../docker/backend/Dockerfile
+    volumes:
+      - wms_upload:/app/static/img/upload
     depends_on:
-      - backend
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/db_warehouse?serverTimezone=UTC&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ljh
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     networks:
       - wms_network
     restart: unless-stopped
 
+  # 负责对外提供 80 端口，并按 /api/ 或 /warehouse/ 反代到 blue/green 后端
+  nginx-lb:
+    image: nginx:alpine
+    container_name: wms_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx-lb.conf:/etc/nginx/nginx.conf:ro
+      # 前端静态文件（由 frontend-assets 服务拷贝）
+      - frontend_html:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend-assets
+    networks:
+      - wms_network
+    restart: unless-stopped
+
+  # 构建前端 dist 并拷贝到共享卷，供 nginx-lb 直接提供静态资源
+  frontend-assets:
+    build:
+      context: ../frontend/warehouse_boot_pc
+      dockerfile: ../../docker/frontend/Dockerfile
+      args:
+        VITE_WAREHOUSE_CONTEXT_PATH: /warehouse
+    volumes:
+      - frontend_html:/assets
+    command: sh -c "cp -r /usr/share/nginx/html/* /assets/"
+    depends_on:
+      - backend-blue
+    networks:
+      - wms_network
+    restart: "no"
+
 volumes:
   mysql_data:
   redis_data:
+  wms_upload:
+  frontend_html:
 
 networks:
   wms_network:

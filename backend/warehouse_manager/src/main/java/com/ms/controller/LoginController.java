@@ -65,7 +65,7 @@ public class LoginController {
     public Result login(@RequestBody LoginUser loginUser) {
 
         String code = loginUser.getVerificationCode();
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(code))) {
+        if (code == null || Boolean.FALSE.equals(redisTemplate.hasKey(code))) {
             return Result.err(Result.CODE_ERR_BUSINESS, "验证码错误！");
         }
 

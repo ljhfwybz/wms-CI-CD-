@@ -42,13 +42,13 @@ public class LoginCheckFilter implements Filter {
         urlList.add("/logout");
         urlList.add("/product/img-upload");
         String url = request.getServletPath();
-        if (urlList.contains(url) || url.contains("img/upload")) {
+        if (StringUtils.hasText(url) && (urlList.contains(url) || url.contains("img/upload"))) {
             chain.doFilter(request, response);
             return;
         }
 
         String token = request.getHeader(WarehouseConstants.HEADER_TOKEN_NAME);
-        if (StringUtils.hasText(token) && Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
+        if (redisTemplate != null && StringUtils.hasText(token) && Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
             chain.doFilter(request, response);
             return;
         }

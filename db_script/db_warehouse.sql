@@ -232,5 +232,71 @@ CREATE TABLE `out_store_info` (
 INSERT INTO `user_info` (`user_code`, `user_name`, `user_pwd`, `user_type`, `user_state`, `is_delete`, `create_by`) VALUES
 ('admin', '系统管理员', 'c431d451c81e75ffac75a640590ed0a1', '1', '1', '0', 1);
 
--- 插入初始业务数据省略（与原文件一致）...
--- (为了节省篇幅，后续 INSERT 语句请参考原文件导入)
+-- 插入角色
+INSERT INTO `role_info` (`role_name`, `role_desc`, `role_code`, `role_state`, `create_by`) VALUES
+('系统管理员', '拥有系统所有权限', 'admin', '1', 1),
+('仓库管理员', '管理仓库相关业务', 'store_manager', '1', 1),
+('采购员', '负责采购业务', 'buyer', '1', 1);
+
+-- 插入权限菜单
+INSERT INTO `auth_info` (`parent_id`, `auth_name`, `auth_desc`, `auth_grade`, `auth_type`, `auth_url`, `auth_code`, `auth_order`, `auth_state`, `create_by`) VALUES
+(0, '系统管理', '系统管理菜单', 1, 'menu', '/system', 'system', 1, '1', 1),
+(1, '用户管理', '用户管理页面', 2, 'menu', '/user', 'user', 1, '1', 1),
+(1, '角色管理', '角色管理页面', 2, 'menu', '/role', 'role', 2, '1', 1),
+(1, '权限管理', '权限管理页面', 2, 'menu', '/auth', 'auth', 3, '1', 1),
+(0, '商品管理', '商品管理菜单', 1, 'menu', '/product', 'product', 2, '1', 1),
+(5, '商品列表', '商品列表页面', 2, 'menu', '/product/list', 'product:list', 1, '1', 1),
+(5, '商品分类', '商品分类页面', 2, 'menu', '/product/category', 'product:category', 2, '1', 1),
+(0, '采购管理', '采购管理菜单', 1, 'menu', '/purchase', 'purchase', 3, '1', 1),
+(8, '采购单', '采购单页面', 2, 'menu', '/purchase/list', 'purchase:list', 1, '1', 1),
+(0, '库存管理', '库存管理菜单', 1, 'menu', '/store', 'store', 4, '1', 1),
+(10, '入库管理', '入库管理页面', 2, 'menu', '/store/in', 'store:in', 1, '1', 1),
+(10, '出库管理', '出库管理页面', 2, 'menu', '/store/out', 'store:out', 2, '1', 1),
+(10, '仓库管理', '仓库管理页面', 2, 'menu', '/store/info', 'store:info', 3, '1', 1),
+(0, '统计管理', '统计管理菜单', 1, 'menu', '/statistics', 'statistics', 5, '1', 1),
+(14, '统计报表', '统计报表页面', 2, 'menu', '/statistics/report', 'statistics:report', 1, '1', 1);
+
+-- 给管理员分配所有权限
+INSERT INTO `role_auth` (`role_id`, `auth_id`)
+SELECT 1, `auth_id` FROM `auth_info`;
+
+-- 给管理员用户分配角色
+INSERT INTO `user_role` (`role_id`, `user_id`) VALUES (1, 1);
+
+-- 插入仓库
+INSERT INTO `store_info` (`store_name`, `store_num`, `store_address`, `concat`, `phone`) VALUES
+('主仓库', 'WH001', '北京市朝阳区', '张三', '13800138000'),
+('分仓库', 'WH002', '上海市浦东新区', '李四', '13900139000');
+
+-- 插入商品分类
+INSERT INTO `product_type` (`parent_id`, `type_code`, `type_name`, `type_desc`) VALUES
+(0, 'FOOD', '食品', '食品类商品'),
+(0, 'ELEC', '电器', '电器类商品'),
+(1, 'FRUIT', '水果', '水果类食品'),
+(1, 'DRINK', '饮料', '饮料类食品'),
+(2, 'TV', '电视', '电视机'),
+(2, 'AC', '空调', '空调设备');
+
+-- 插入品牌
+INSERT INTO `brand_info` (`brand_name`, `brand_leter`, `brand_desc`) VALUES
+('海尔', 'H', '海尔集团'),
+('美的', 'M', '美的集团'),
+('格力', 'G', '格力电器');
+
+-- 插入供应商
+INSERT INTO `supply_info` (`supply_num`, `supply_name`, `supply_introduce`, `concat`, `phone`, `address`) VALUES
+('SUP001', '北京供应商', '北京地区供应商', '王五', '13700137000', '北京市海淀区'),
+('SUP002', '上海供应商', '上海地区供应商', '赵六', '13600136000', '上海市黄浦区');
+
+-- 插入产地
+INSERT INTO `place_info` (`place_name`, `place_num`, `introduce`) VALUES
+('北京', 'BJ', '北京产地'),
+('上海', 'SH', '上海产地'),
+('广东', 'GD', '广东产地');
+
+-- 插入单位
+INSERT INTO `unit_info` (`unit_name`, `unit_desc`) VALUES
+('台', '台'),
+('个', '个'),
+('箱', '箱'),
+('千克', '千克');

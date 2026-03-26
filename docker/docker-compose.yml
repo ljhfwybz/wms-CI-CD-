@@ -6,7 +6,7 @@ services:
     container_name: wms_mysql
     environment:
       MYSQL_ROOT_PASSWORD: ljh
-      MYSQL_DATABASE: wms
+      MYSQL_DATABASE: db_warehouse
     ports:
       - "3306:3306"
     volumes:
@@ -48,10 +48,10 @@ services:
       redis:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wms?serverTimezone=UTC&useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://wms_mysql:3306/db_warehouse?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ljh
-      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_HOST: wms_redis
       SPRING_REDIS_PORT: 6379
     networks:
       - wms_network
@@ -69,10 +69,10 @@ services:
       redis:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/wms?serverTimezone=UTC&useSSL=false
+      SPRING_DATASOURCE_URL: jdbc:mysql://wms_mysql:3306/db_warehouse?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ljh
-      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_HOST: wms_redis
       SPRING_REDIS_PORT: 6379
     networks:
       - wms_network
